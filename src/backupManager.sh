@@ -44,7 +44,7 @@ function backup {
       roundedInterval=$(( (2*$roundedInterval+$timeDiff)/(2*$timeDiff) ))
     fi
     intrList=("$roundedInterval" "${intrList[@]}")
-    refdir=$version
+    refdir="$version"
   done
 
   # Also add the process id to the names to distinguish
@@ -70,14 +70,18 @@ function backup {
 
   # Run rsync
   local options="$@"
-  if [ -d "$refdir" ]; then
-      options="$options"" --link-dest=""$refdir"
-  fi
-
   if [ "$super" = "1" ]; then
-    sudo rsync $options "$source" "$path"
+    if [ -d "$refdir" ]; then
+      sudo rsync $options --link-dest="$refdir" "$source" "$path"
+    else
+      sudo rsync $options "$source" "$path"
+    fi
   else
-    rsync $options "$source" "$path"
+    if [ -d "$refdir" ]; then
+      rsync $options --link-dest="$refdir" "$source" "$path"
+    else
+      rsync $options "$source" "$path"
+    fi
   fi
 
   # Name the created directory according to the current time
