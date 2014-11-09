@@ -18,11 +18,11 @@ Options
     -f, --stamp		The time stamp file used to date the last backup
     -t, --time		The time interval in seconds.
     -n, --versions	Max number of backup versions to keep.
-    -S, --super		Require superuser rights for backup?
+    -q, --shutdown	Attempt shutdown after completion.
     -o, --options	All options past this identifier are used as rsync options."
 
 # DEFAULTS
-super="0"
+shutdown="0"
 target="$my_dir"
 cntLim="1"
 timeDiff="60"
@@ -59,8 +59,8 @@ while [[ $# > 0 ]]; do
     stampFile="$1"
     shift
     ;;
-    -S|--super)
-    super="1"
+    -q|--shutdown)
+    shutdown="1"
     ;;
     -o|--options)
     options="$@"
@@ -74,4 +74,4 @@ done
 
 shift 6
 
-checkSchedule "$super" "$timeDiff" "$cntLim" "$stampFile" "$target" "$source" $options
+checkSchedule "$shutdown" "$timeDiff" "$cntLim" "$stampFile" "$target" "$source" $options

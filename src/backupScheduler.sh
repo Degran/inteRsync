@@ -6,7 +6,7 @@ my_dir="$(dirname "$0")"
 source "$my_dir/src/backupManager.sh"
 
 function checkSchedule {
-  local super=$1
+  local shutdown=$1
   local timeDiff=$2
   local cntLim=$3
   local stampFile=$4
@@ -43,13 +43,18 @@ function checkSchedule {
     echo "Backup started at ""$(date)"
     echo "Backup is running ..."
 	
-    backup "$super" "$timeDiff" "$cntLim" "$target" "$source" "$@"
+    backup "$timeDiff" "$cntLim" "$target" "$source" "$@"
 	
     # Update the timestamp
     touch "$stampFile"
 
     echo "Backup terminated on ""$(date)"
-    read -n 1 -s
+    
+    if [ "$shutdown" -eq "1" ]; then
+      shutdown -h now
+    else
+      read -n 1 -s
+    fi
 
   fi
 }
