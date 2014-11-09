@@ -68,10 +68,10 @@ while [[ $# > 0 ]]; do
     ;;
     *)
     # unknown option
+    echo "$usage"
+    exit 0
     ;;
   esac
 done
-
-shift 6
 
 checkSchedule "$shutdown" "$timeDiff" "$cntLim" "$stampFile" "$target" "$source" $options
