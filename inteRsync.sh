@@ -23,6 +23,7 @@ Options
 
 # DEFAULTS
 shutdown="0"
+super="0"
 target="$my_dir"
 cntLim="1"
 timeDiff="60"
@@ -62,6 +63,9 @@ while [[ $# > 0 ]]; do
     -q|--shutdown)
     shutdown="1"
     ;;
+    -S|--super)
+    super="1"
+    ;;
     -o|--options)
     options="$@"
     break 1
@@ -74,4 +78,4 @@ while [[ $# > 0 ]]; do
   esac
 done
 
-checkSchedule "$shutdown" "$timeDiff" "$cntLim" "$stampFile" "$target" "$source" $options
+checkSchedule "$super" "$shutdown" "$timeDiff" "$cntLim" "$stampFile" "$target" "$source" $options

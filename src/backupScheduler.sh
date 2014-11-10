@@ -6,13 +6,14 @@ my_dir="$(dirname "$0")"
 source "$my_dir/src/backupManager.sh"
 
 function checkSchedule {
-  local shutdown=$1
-  local timeDiff=$2
-  local cntLim=$3
-  local stampFile=$4
-  local target=$5
-  local source=$6
-  shift 6
+  local super=$1
+  local shutdown=$2
+  local timeDiff=$3
+  local cntLim=$4
+  local stampFile=$5
+  local target=$6
+  local source=$7
+  shift 7
 
   # Get times
   local now=$(date +%s)
@@ -40,10 +41,22 @@ function checkSchedule {
     # Create the backup
     echo "Backup is ready to begin."
     read -n 1 -s
+    
+    # Prevents sudo from forgetting the password.
+    # Necessary for shutting down after a really long backup.
+    # https://gist.github.com/cowboy/3118588
+    if [ "$super" -eq "1" ] && [ "$shutdown" -eq "1" ]; then
+      # Might as well ask for password up-front, right?
+      sudo -v
+ 
+      # Keep-alive: update existing sudo time stamp if set, otherwise do nothing.
+      while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+    fi
+    
     echo "Backup started at ""$(date)"
     echo "Backup is running ..."
 	
-    backup "$timeDiff" "$cntLim" "$target" "$source" "$@"
+    backup "$super" "$timeDiff" "$cntLim" "$target" "$source" "$@"
 	
     # Update the timestamp
     touch "$stampFile"
@@ -51,7 +64,11 @@ function checkSchedule {
     echo "Backup terminated on ""$(date)"
     
     if [ "$shutdown" -eq "1" ]; then
-      shutdown -h now
+      if [ "$super" -eq "1" ]; then
+        sudo shutdown -h now
+      else
+        shutdown -h now
+      fi
     else
       read -n 1 -s
     fi

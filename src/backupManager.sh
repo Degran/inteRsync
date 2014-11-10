@@ -6,11 +6,12 @@ my_dir="$(dirname "$0")"
 source "$my_dir/src/backupCostFunction.sh"
 
 function backup {
-  local timeDiff=$1
-  local cntLim=$2
-  local target=$3
-  local source=$4
-  shift 4
+  local super=$1
+  local timeDiff=$2
+  local cntLim=$3
+  local target=$4
+  local source=$5
+  shift 5
   
   # Scan the target folder for old backup versions
   local refdir=""
@@ -69,10 +70,18 @@ function backup {
 
   # Run rsync
   local options="$@"
-  if [ -d "$refdir" ]; then
-    rsync $options --link-dest="$refdir" "$source" "$path"
+  if [ "$super" = "1" ]; then
+    if [ -d "$refdir" ]; then
+      sudo rsync $options --link-dest="$refdir" "$source" "$path"
+    else
+      sudo rsync $options "$source" "$path"
+    fi
   else
-    rsync $options "$source" "$path"
+    if [ -d "$refdir" ]; then
+      rsync $options --link-dest="$refdir" "$source" "$path"
+    else
+      rsync $options "$source" "$path"
+    fi
   fi
 
   # Name the created directory according to the current time
