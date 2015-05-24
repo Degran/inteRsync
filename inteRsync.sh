@@ -64,16 +64,19 @@ while [[ $# > 0 ]]; do
     -q|--shutdown)
     value="$1"
     shift
-    if [ $value = ask ]; then 
-    	read -p "Shutdown the computer after backup (yes/no): " value
-    fi
     case $value in
+    	ask)
+    	shutdown="2"
+    	;;
     	yes)
     	shutdown="1"
     	;;
     	no)
     	shutdown="0"
     	;;
+    	*)
+    	echo ""
+    	echo "Unknown shutdown value."
     esac
     ;;
     -S|--super)
@@ -85,7 +88,8 @@ while [[ $# > 0 ]]; do
     ;;
     *)
     # unknown option
-    echo $key
+    echo ""
+    echo "Unknown option: ""$key"
     echo "$usage"
     exit 0
     ;;

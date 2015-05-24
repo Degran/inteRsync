@@ -42,6 +42,21 @@ function checkSchedule {
     echo "Backup is ready to begin."
     read -n 1 -s
     
+    while [ "$shutdown" -eq "2" ]; do
+    	read -p "Shutdown the computer after backup (yes/no): " value
+    	case $value in
+	    	yes)
+	    	shutdown="1"
+	    	;;
+	    	no)
+	    	shutdown="0"
+	    	;;
+	    	*)
+	    	shutdown="2"
+	    	;;
+    	esac
+    done
+    
     # Prevents sudo from forgetting the password.
     # Necessary for shutting down after a really long backup.
     # https://gist.github.com/cowboy/3118588
@@ -64,11 +79,7 @@ function checkSchedule {
     echo "Backup terminated on ""$(date)"
     
     if [ "$shutdown" -eq "1" ]; then
-      if [ "$super" -eq "1" ]; then
-        sudo shutdown -h now
-      else
-        shutdown -h now
-      fi
+      sudo shutdown -h now
     else
       read -n 1 -s
     fi
