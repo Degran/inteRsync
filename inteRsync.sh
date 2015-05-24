@@ -1,6 +1,7 @@
 #!/bin/bash
 
-description="inteRsync schedules and manages backups made by rsync.
+description="
+inteRsync schedules and manages backups made by rsync.
 It is meant to be run at start-up (or periodically) so to remind the user when a new backup should be made. As a secondary task, it also manages the memory occupied by backups. Hard links are used for files that don't change and inteRsync decides what backups to remove when the desired number of versions is exceeded. The retained backups are approximately exponentially spaced, to keep both very recent and very old versions."
 
 my_dir="$(dirname "$0")"
@@ -18,7 +19,7 @@ Options
     -f, --stamp		The time stamp file used to date the last backup
     -t, --time		The time interval in seconds.
     -n, --versions	Max number of backup versions to keep.
-    -q, --shutdown	Attempt shutdown after completion.
+    -q, --shutdown	Attempt shutdown after completion, values: yes , no, ask
     -o, --options	All options past this identifier are used as rsync options."
 
 # DEFAULTS
@@ -61,7 +62,19 @@ while [[ $# > 0 ]]; do
     shift
     ;;
     -q|--shutdown)
-    shutdown="1"
+    value="$1"
+    shift
+    if [ $value = ask ]; then 
+    	read -p "Shutdown the computer after backup (yes/no): " value
+    fi
+    case $value in
+    	yes)
+    	shutdown="1"
+    	;;
+    	no)
+    	shutdown="0"
+    	;;
+    esac
     ;;
     -S|--super)
     super="1"
@@ -72,6 +85,7 @@ while [[ $# > 0 ]]; do
     ;;
     *)
     # unknown option
+    echo $key
     echo "$usage"
     exit 0
     ;;
