@@ -58,9 +58,10 @@ function checkSchedule {
     done
     
     # Prevents sudo from forgetting the password.
-    # Necessary for shutting down after a really long backup.
+    # Necessary for shutting down after a really long backup,
+    # unless the backup itself used sudo.
     # https://gist.github.com/cowboy/3118588
-    if [ "$shutdown" -eq "1" ]; then
+    if [ "$shutdown" -eq "1" ] && [ "$super" -ne "1" ]; then
       # Might as well ask for password up-front, right?
       sudo -v
  
